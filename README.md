@@ -1,29 +1,25 @@
+
 # Agentic AI RAG Chatbot
 
-A Retrieval-Augmented Generation (RAG) chatbot built using Python, LangGraph, Pinecone, Hugging Face embeddings, Groq, and FastAPI.
+A Retrieval-Augmented Generation (RAG) chatbot built with Python, LangGraph, Pinecone, Hugging Face embeddings, Groq, and FastAPI.
 
-The chatbot answers questions strictly using the provided Agentic AI ebook as its knowledge base. If the requested information cannot be found in the retrieved context, the system returns a grounded fallback response instead of generating an answer from outside knowledge.
-
----
-
-## Features
-
-- PDF ingestion and text extraction
-- Recursive text chunking with overlap
-- Semantic embeddings using `all-MiniLM-L6-v2`
-- Vector storage and similarity search using Pinecone
-- LangGraph-based retrieval and generation workflow
-- Groq LLM for answer generation
-- Strict context-grounded prompting
-- Relevance-based confidence score
-- Retrieved context returned with every response
-- Source document and page information
-- FastAPI REST API
-- Out-of-domain question fallback
+This chatbot is designed to answer questions strictly using a provided knowledge base (the Agentic AI ebook). It employs a strict grounding strategy: if the requested information cannot be found in the retrieved context, the system returns a safe fallback response rather than hallucinating from external LLM knowledge.
 
 ---
 
-## Architecture
+## ✨ Features
+
+* **Document Processing:** Automated PDF ingestion, text extraction, and recursive text chunking with overlap.
+* **Semantic Search:** Generates embeddings using Hugging Face (`all-MiniLM-L6-v2`) and performs vector similarity search via Pinecone.
+* **Advanced Orchestration:** Utilizes LangGraph for a robust retrieval and generation workflow.
+* **High-Speed Generation:** Powered by Groq LLM for fast, accurate answer generation.
+* **Strict Grounding:** Employs rigorous prompting to ensure answers rely *only* on the retrieved context. Includes an out-of-domain question fallback.
+* **Detailed Context Tracing:** Every response returns the retrieved context, source document name, page information, and a relevance-based confidence score.
+* **RESTful API:** Fully interactive backend built on FastAPI.
+
+---
+
+## 🏗️ Architecture
 
 ```text
                  Agentic AI PDF
@@ -38,10 +34,10 @@ The chatbot answers questions strictly using the provided Agentic AI ebook as it
               Hugging Face Embeddings
                        |
                        v
-                    Pinecone
+                    Pinecone Vector DB
                        |
                        |
-User Question --> FastAPI
+User Question --> FastAPI Endpoint
                        |
                        v
                    LangGraph
@@ -56,7 +52,7 @@ User Question --> FastAPI
               Relevant    Not Relevant
                  |           |
                  v           v
-             Groq LLM    Fallback
+             Groq LLM    Fallback Response
                  |
                  v
         Answer + Context + Score
@@ -64,183 +60,186 @@ User Question --> FastAPI
                  v
                API Response
 
+```
 
-Tech Stack
-Python
-FastAPI
-LangGraph
-LangChain
-Pinecone
-Hugging Face Sentence Transformers
-Groq
-Pydantic
-Uvicorn
-Project Structure
+---
+
+## 🛠️ Tech Stack
+
+* **Core Languages & Frameworks:** Python, FastAPI, Pydantic, Uvicorn
+* **AI Orchestration:** LangGraph, LangChain
+* **Vector Database:** Pinecone
+* **Embeddings & LLM:** Hugging Face Sentence Transformers, Groq API
+
+---
+
+## 📂 Project Structure
+
+```text
 app/
 ├── ingestion/
-│   └── ingest.py
+│   └── ingest.py       # PDF loading, chunking, and Pinecone indexing
 ├── rag/
-│   ├── embeddings.py
-│   ├── graph.py
-│   ├── prompts.py
-│   └── retriever.py
-├── config.py
-├── main.py
-└── schemas.py
+│   ├── embeddings.py   # HuggingFace embedding configuration
+│   ├── graph.py        # LangGraph workflow definition
+│   ├── prompts.py      # Grounded LLM prompts
+│   └── retriever.py    # Pinecone retrieval logic
+├── config.py           # Environment and app configuration
+├── main.py             # FastAPI application entry point
+└── schemas.py          # Pydantic models for API requests/responses
 
 data/
-└── agentic_ai.pdf
-Setup
-1. Clone the repository
+└── agentic_ai.pdf      # Source knowledge base
+
+```
+
+---
+
+## 🚀 Setup & Installation
+
+### 1. Clone the repository
+
+```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd RAG-Chatbot
-2. Create a virtual environment
 
-Windows:
+```
 
+### 2. Create a virtual environment
+
+**Windows:**
+
+```bash
 python -m venv .venv
 .venv\Scripts\activate
-3. Install dependencies
+
+```
+
+**macOS/Linux:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
-4. Configure environment variables
 
-Create a .env file in the project root:
+```
 
+### 4. Configure environment variables
+
+Create a `.env` file in the root directory of the project. **Do not commit this file to version control.**
+
+```env
 PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_INDEX_NAME=agentic-ai-rag
 GROQ_API_KEY=your_groq_api_key
 
-Do not commit .env to GitHub.
+```
 
-PDF Ingestion
+---
 
-Place the Agentic AI ebook at:
+## 📖 Usage
 
-data/agentic_ai.pdf
+### Data Ingestion
 
-Run:
+Before querying the chatbot, you must ingest the PDF data into your vector database. Place your target ebook at `data/agentic_ai.pdf` and run the ingestion script:
 
+```bash
 python -m app.ingestion.ingest
 
-This performs:
+```
 
-PDF loading
-Text extraction
-Chunking
-Embedding generation
-Pinecone indexing
-Run the API
+*This script handles PDF loading, text extraction, chunking, embedding generation, and Pinecone indexing.*
 
-Start the FastAPI server:
+### Running the API Server
 
+Start the FastAPI server using Uvicorn:
+
+```bash
 uvicorn app.main:app --reload
 
-The API will be available at:
+```
 
-http://127.0.0.1:8000
+* **Base URL:** `[http://127.0.0.1:8000](http://127.0.0.1:8000)`
+* **Interactive API Docs (Swagger UI):** `[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)`
 
-Interactive API documentation:
+---
 
-http://127.0.0.1:8000/docs
-API Endpoint
-POST /chat
+## 🔌 API Reference
 
-Example request:
+### `POST /chat`
 
+**Request Payload:**
+
+```json
 {
   "question": "What is an AI agent?"
 }
 
-The response contains:
+```
 
-Generated answer
-Retrieved context chunks
-Retrieval confidence score
-Source document
-Page information
-Retrieval score
-Sample Queries
-1. What is an AI agent?
+**Response Payload:**
 
-Tests basic knowledge retrieval from the ebook.
-
-2. What are the key characteristics of agentic AI systems?
-
-Tests retrieval of conceptual information.
-
-3. How do AI agents differ from traditional LLM applications?
-
-Tests comparison-based retrieval.
-
-4. What role does planning play in an agentic AI system?
-
-Tests retrieval of a specific concept.
-
-5. Who is the current Prime Minister of India?
-
-This is an out-of-domain question.
-
-Expected behavior:
-
-I could not find this information in the provided knowledge base.
-
-The chatbot should not use external knowledge to answer questions outside the provided ebook.
-
-Grounding Strategy
-
-The chatbot is designed to minimize hallucination by:
-
-Retrieving the most relevant document chunks from Pinecone.
-Checking the retrieval relevance score.
-Passing only the retrieved context to the LLM.
-Instructing the LLM to answer only from the supplied context.
-Returning a fallback response when relevant information is not found.
-Confidence Score
-
-The confidence value represents the retrieval relevance signal based on the similarity score of the retrieved chunks.
-
-It should not be interpreted as a calibrated probability that the generated answer is correct.
-
-Sample Output
-
-The API returns a response in the following structure:
-
+```json
 {
-  "answer": "....",
+  "answer": "An AI agent is a system that can perceive its environment, make decisions, and take actions to achieve specific goals...",
   "context": [
     {
-      "content": "....",
+      "content": "Agents are autonomous entities...",
       "page": 5
     }
   ],
-  "confidence": 0.XX,
+  "confidence": 0.89,
   "sources": [
     {
       "document": "Agentic AI Ebook",
       "page": 5,
       "chunk_id": 12,
-      "retrieval_score": 0.XX
+      "retrieval_score": 0.89
     }
   ]
 }
-Evaluation
 
-The following queries were tested through the FastAPI Swagger interface:
+```
 
-Query	Expected Behavior
-What is an AI agent?	Answer from ebook
-What are the key characteristics of agentic AI systems?	Answer from ebook
-How do AI agents differ from traditional LLM applications?	Answer from ebook
-What role does planning play in an agentic AI system?	Answer from ebook
-Who is the current Prime Minister of India?	Grounded fallback
-Limitations
-Answers are limited to the information available in the provided ebook.
-Retrieval quality depends on chunking and embedding similarity.
-The confidence score is a retrieval signal rather than a calibrated probability.
-Pinecone and Groq API credentials are required to run the complete pipeline.
-Future Improvements
-Add a web-based chat UI
-Add conversation memory
-Improve retrieval using hybrid search or reranking
-Add automated evaluation using retrieval and answer quality metrics
-Add deterministic document IDs during ingestion
+*Note: The **confidence score** represents the retrieval relevance signal based on the vector similarity score of the retrieved chunks. It is not a calibrated probability of the generated answer's factual correctness.*
+
+---
+
+## 🧪 Evaluation & Testing
+
+The chatbot is designed to minimize hallucination. It achieves this by retrieving the most relevant document chunks, verifying the retrieval score, passing strictly that context to the LLM, and forcing a fallback if context is missing.
+
+You can test these behaviors using the `/chat` endpoint:
+
+| Test Query | Goal | Expected Behavior |
+| --- | --- | --- |
+| *What is an AI agent?* | Basic knowledge retrieval | Answer generated from the ebook. |
+| *What are the key characteristics of agentic AI systems?* | Conceptual retrieval | Answer generated from the ebook. |
+| *How do AI agents differ from traditional LLM applications?* | Comparison-based retrieval | Answer generated from the ebook. |
+| *What role does planning play in an agentic AI system?* | Specific concept retrieval | Answer generated from the ebook. |
+| *Who is the current Prime Minister of India?* | Out-of-domain handling | **Fallback:** *"I could not find this information in the provided knowledge base."* |
+
+---
+
+## ⚠️ Limitations
+
+* **Scoped Knowledge:** Answers are strictly limited to the information available in the provided PDF.
+* **Retrieval Dependency:** Answer quality depends heavily on chunking strategy and embedding similarity.
+* **Score Interpretation:** The confidence score indicates retrieval strength, not absolute factual accuracy.
+* **Dependencies:** Valid Pinecone and Groq API credentials are required for the pipeline to function.
+
+---
+
+## 🗺️ Future Improvements
+
+* [ ] Add a web-based chat UI (e.g., Streamlit or Gradio).
+* [ ] Implement conversation memory to support follow-up questions.
+* [ ] Improve retrieval accuracy using hybrid search (keyword + semantic) or a cross-encoder reranker.
+* [ ] Integrate automated evaluation using RAG metrics (e.g., RAGAS) for retrieval and answer quality.
+* [ ] Add deterministic document IDs during ingestion to prevent duplicate indexing on rerun.
